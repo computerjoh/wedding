@@ -6,25 +6,17 @@ import { ThankYouMessage } from "@/components/ThankYouMessage";
 
 export default function Home() {
   const weddingDate = "(soon)";
-  const [rsvp, setRsvp] = useState({
-    name: "",
-    email: "",
-    attending: "yes",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<{
+    name: string;
+    attending: string;
+  } | null>(null);
 
-  const handleChange =
-    (key: keyof typeof rsvp) =>
-      (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      ) => {
-        setRsvp((prev) => ({ ...prev, [key]: e.target.value }));
-      };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (formData: {
+    name: string;
+    email: string;
+    attending: string;
+    message?: string;
+  }) => {
     try {
       const API_URL = 'https://gdocs-passthrough.john3335.workers.dev';
       const response = await fetch(API_URL, {
@@ -32,7 +24,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(rsvp),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -42,29 +34,28 @@ export default function Home() {
         return;
       }
 
-      setSubmitted(true);
+      setSubmittedData({
+        name: formData.name,
+        attending: formData.attending,
+      });
     } catch (err) {
       console.error("Error submitting RSVP:", err);
+      alert("Something went wrong. Please try again.");
     }
   };
-
-
-  const { name, attending } = rsvp;
 
   return (
     <main className="min-h-screen bg-pink-50 text-gray-900 p-6">
       <div className="max-w-3xl mx-auto text-center">
         <HeroSection weddingDate={weddingDate} />
         <ImageCarousel />
-        {!submitted ? (
-          <RsvpForm
-            rsvp={rsvp}
-            setRsvp={setRsvp}
-            handleChange={handleChange}
-            handleSubmit={handleSubmit}
-          />
+        {!submittedData ? (
+          <RsvpForm onSubmit={handleSubmit} />
         ) : (
-          <ThankYouMessage name={name} attending={attending} />
+          <ThankYouMessage
+            name={submittedData.name}
+            attending={submittedData.attending}
+          />
         )}
       </div>
     </main>

@@ -1,4 +1,14 @@
-import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,107 +19,122 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
-type RsvpData = {
-  name: string;
-  email: string;
-  attending: string;
-  message: string;
-};
+const formSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.email({ message: "Enter a valid email" }),
+  attending: z.enum(["yes", "no"]),
+  message: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export function RsvpForm({
-  rsvp,
-  setRsvp,
-  handleChange,
-  handleSubmit,
+  onSubmit,
 }: {
-  rsvp: RsvpData;
-  setRsvp: React.Dispatch<React.SetStateAction<RsvpData>>;
-  handleChange: (
-    key: keyof RsvpData
-  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleSubmit: (e: React.FormEvent) => void;
+  onSubmit: (data: FormData) => void;
 }) {
-  const { name, email, attending, message } = rsvp;
-  const [submitting, setSubmitting] = useState(false);
-
-  const wrappedSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (submitting) return;
-
-    setSubmitting(true);
-    try {
-      handleSubmit(e);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      attending: "yes",
+      message: "",
+    },
+  });
 
   return (
-    <form
-      onSubmit={wrappedSubmit}
-      className="bg-white p-8 rounded-xl shadow-lg space-y-6"
-      name="rsvp"
-    >
-      <h2 className="text-3xl font-bold text-center text-primary">RSVP</h2>
-      <p className="text-center text-muted-foreground">
-        Let us know if you'll be joining us on our big day!
-      </p>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="bg-white p-8 rounded-xl shadow-lg space-y-6"
+      >
+        <h2 className="text-3xl font-bold text-center text-primary">RSVP</h2>
+        <p className="text-center text-foreground">
+          Let us know if you'll be joining us on our big day!
+        </p>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Input
-          aria-label="Your Name"
-          placeholder="Your Name"
-          value={name}
-          onChange={handleChange("name")}
-          autoComplete="name"
-          required
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Your Name</FormLabel>
+              <FormControl>
+                <Input placeholder="John Smith" autoComplete="name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        <Input
-          type="email"
-          aria-label="Your Email"
-          placeholder="Your Email"
-          value={email}
-          onChange={handleChange("email")}
-          autoComplete="email"
-          pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-          required
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Your Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div>
-        <Label htmlFor="attending" className="block mb-2 font-medium">
-          Can you celebrate with us?
-        </Label>
-        <Select
-          value={attending}
-          onValueChange={(value) =>
-            setRsvp((prev) => ({ ...prev, attending: value }))
-          }
-        >
-          <SelectTrigger id="attending" className="w-full">
-            <SelectValue placeholder="Yes, we’ll be there!" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="yes">Absolutely, can't wait!</SelectItem>
-            <SelectItem value="no">Sadly, can't make it</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <FormField
+          control={form.control}
+          name="attending"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Can you celebrate with us?</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Yes, we'll be there!" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="yes">Absolutely, can't wait!</SelectItem>
+                  <SelectItem value="no">Sadly, can't make it</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Textarea
-        aria-label="Leave a message"
-        placeholder="Leave a message for the couple (optional)"
-        value={message}
-        onChange={handleChange("message")}
-        rows={3}
-      />
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Message</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Leave a message for the couple (optional)"
+                  rows={3}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Button type="submit" className="w-full" disabled={submitting}>
-        Send My RSVP 💌
-      </Button>
-    </form>
+        <Button type="submit" className="w-full">
+          Send My RSVP 💌
+        </Button>
+      </form>
+    </Form>
   );
 }
