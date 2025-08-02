@@ -1,11 +1,22 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+
+type RsvpData = {
+  name: string;
+  email: string;
+  attending: string;
+  message: string;
+};
 
 export function RsvpForm({
   rsvp,
@@ -13,56 +24,79 @@ export function RsvpForm({
   handleChange,
   handleSubmit,
 }: {
-  rsvp: { name: string; email: string; attending: string; message: string };
-  setRsvp: React.Dispatch<React.SetStateAction<typeof rsvp>>;
-  handleChange: (key: keyof typeof rsvp) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  rsvp: RsvpData;
+  setRsvp: React.Dispatch<React.SetStateAction<RsvpData>>;
+  handleChange: (
+    key: keyof RsvpData
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
 }) {
   const { name, email, attending, message } = rsvp;
+  const [submitting, setSubmitting] = useState(false);
+
+  const wrappedSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
+    try {
+      handleSubmit(e);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="bg-white p-6 rounded shadow text-left space-y-4"
+      onSubmit={wrappedSubmit}
+      className="bg-white p-8 rounded-xl shadow-lg space-y-6"
       name="rsvp"
     >
-      <h2 className="text-2xl font-semibold text-center">RSVP</h2>
+      <h2 className="text-3xl font-bold text-center text-primary">RSVP</h2>
+      <p className="text-center text-muted-foreground">
+        Let us know if you'll be joining us on our big day!
+      </p>
 
-      <Input
-        aria-label="Your Name"
-        placeholder="Your Name"
-        value={name}
-        onChange={handleChange("name")}
-        required
-      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Input
+          aria-label="Your Name"
+          placeholder="Your Name"
+          value={name}
+          onChange={handleChange("name")}
+          autoComplete="name"
+          required
+        />
 
-      <Input
-        type="email"
-        aria-label="Your Email"
-        placeholder="Your Email"
-        value={email}
-        onChange={handleChange("email")}
-        required
-      />
+        <Input
+          type="email"
+          aria-label="Your Email"
+          placeholder="Your Email"
+          value={email}
+          onChange={handleChange("email")}
+          autoComplete="email"
+          pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+          required
+        />
+      </div>
 
       <div>
-        <Label className="block mb-2">Will you attend?</Label>
-        <RadioGroup
+        <Label htmlFor="attending" className="block mb-2 font-medium">
+          Can you celebrate with us?
+        </Label>
+        <Select
           value={attending}
           onValueChange={(value) =>
             setRsvp((prev) => ({ ...prev, attending: value }))
           }
-          className="flex gap-4"
         >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="yes" id="attending-yes" />
-            <Label htmlFor="attending-yes">Will attend</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="no" id="attending-no" />
-            <Label htmlFor="attending-no">Can't make it</Label>
-          </div>
-        </RadioGroup>
+          <SelectTrigger id="attending" className="w-full">
+            <SelectValue placeholder="Yes, we’ll be there!" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="yes">Absolutely, can't wait!</SelectItem>
+            <SelectItem value="no">Sadly, can't make it</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Textarea
@@ -73,8 +107,8 @@ export function RsvpForm({
         rows={3}
       />
 
-      <Button type="submit" className="w-full">
-        Submit RSVP
+      <Button type="submit" className="w-full" disabled={submitting}>
+        Send My RSVP 💌
       </Button>
     </form>
   );
