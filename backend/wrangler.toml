@@ -1,0 +1,6 @@
+name = "gdocs-passthrough"
+compatibility_date = "2024-08-01"
+main = "index.ts"
+
+[vars]
+GOOGLE_SHEET_ID = "1la1dJJIj3qoiLZxIisZNCVdtntMxsQq83Cp2turWP9o"
