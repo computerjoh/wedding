@@ -29,7 +29,7 @@ export function ImageCarousel() {
   };
 
   return (
-    <Carousel className="w-full max-w-2xl mx-auto mb-8">
+    <Carousel className="w-full max-w-2xl mx-auto mb-8" >
       <CarouselContent>
         {images.map((src, idx) => (
           <CarouselItem key={idx}>
@@ -41,7 +41,7 @@ export function ImageCarousel() {
                 src={src}
                 alt={`Slide ${idx + 1}`}
                 onLoad={() => handleLoad(idx)}
-                onError={() => handleLoad(idx)} // Also hide skeleton on error
+                onError={() => handleLoad(idx)}
                 className={`w-full h-full object-cover transition-opacity duration-500 ${loaded[idx] ? 'opacity-100' : 'opacity-0'
                   }`}
               />
@@ -49,8 +49,8 @@ export function ImageCarousel() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="hidden md:flex" />
+      <CarouselNext className="hidden md:flex" />
     </Carousel>
   );
 }

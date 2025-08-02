@@ -42,11 +42,9 @@ export default function Home() {
         return;
       }
 
-      alert("RSVP submitted successfully!");
       setSubmitted(true);
     } catch (err) {
       console.error("Error submitting RSVP:", err);
-      alert("Submission failed. Please check your internet connection.");
     }
   };
 
