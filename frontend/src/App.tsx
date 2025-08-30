@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { RsvpForm } from "@/components/RsvpForm";
 import { ThankYouMessage } from "@/components/ThankYouMessage";
+import { client } from "./lib/api";
 
 export default function Home() {
   const weddingDate = "(soon)";
@@ -11,38 +12,30 @@ export default function Home() {
     attending: string;
   } | null>(null);
 
-  const handleSubmit = async (formData: {
-    name: string;
-    email: string;
-    attending: string;
-    message?: string;
-  }) => {
-    try {
-      const API_URL = 'https://gdocs-passthrough.john3335.workers.dev';
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("Submission failed:", error);
-        alert("Something went wrong. Please try again.");
-        return;
-      }
-
-      setSubmittedData({
+  async function handleSubmit(formData: {
+    name: string
+    email: string
+    attending: string
+  }) {
+    const res = await client.rsvp.$post({
+      json: {
         name: formData.name,
-        attending: formData.attending,
-      });
-    } catch (err) {
-      console.error("Error submitting RSVP:", err);
-      alert("Something went wrong. Please try again.");
+        email: formData.email,
+        isAttending: formData.attending.toLowerCase() === 'yes',
+      },
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(errorText)
     }
-  };
+
+    const { rsvp } = await res.json()
+    setSubmittedData({
+      name: rsvp.name,
+      attending: rsvp.is_attending ? 'yes' : 'no',
+    })
+  }
 
   return (
     <main className="min-h-screen bg-pink-50 text-gray-900 p-6">
