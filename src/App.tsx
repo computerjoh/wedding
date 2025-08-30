@@ -3,7 +3,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { RsvpForm } from "@/components/RsvpForm";
 import { ThankYouMessage } from "@/components/ThankYouMessage";
-import { client } from "./lib/api";
+import { supabase } from "./lib/supabase";
 
 export default function Home() {
   const weddingDate = "(soon)";
@@ -12,30 +12,35 @@ export default function Home() {
     attending: string;
   } | null>(null);
 
+
   async function handleSubmit(formData: {
     name: string
     email: string
-    attending: string
+    attending: string // "yes" | "no"
   }) {
-    const res = await client.rsvp.$post({
-      json: {
-        name: formData.name,
-        email: formData.email,
-        isAttending: formData.attending.toLowerCase() === 'yes',
-      },
-    })
+    const is_attending = formData.attending.toLowerCase() === 'yes'
 
-    if (!res.ok) {
-      const errorText = await res.text()
-      throw new Error(errorText)
-    }
+    const { data, error } = await supabase
+      .from('wedding_rsvps')
+      .upsert(
+        {
+          name: formData.name.trim(),
+          email: formData.email.toLowerCase(),
+          is_attending,
+        },
+        { onConflict: 'email' }
+      )
+      .select()
+      .single()
 
-    const { rsvp } = await res.json()
+    if (error) throw new Error(error.message)
+
     setSubmittedData({
-      name: rsvp.name,
-      attending: rsvp.is_attending ? 'yes' : 'no',
+      name: data.name,
+      attending: data.is_attending ? 'yes' : 'no',
     })
   }
+
 
   return (
     <main className="min-h-screen bg-pink-50 text-gray-900 p-6">
