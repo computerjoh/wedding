@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { cors } from 'hono/cors'
 import { createClient } from '@supabase/supabase-js'
-import type { Database, TablesInsert } from '../database.types'
+import type { Database, TablesInsert } from './database.types'
 
 const app = new Hono()
 
