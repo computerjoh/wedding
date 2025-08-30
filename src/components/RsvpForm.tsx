@@ -47,7 +47,7 @@ export function RsvpForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded-xl shadow-lg space-y-6"
+        className="bg-card p-8 rounded-xl shadow-xl space-y-8 max-w-3xl mx-auto"
       >
         <h2 className="text-3xl font-bold text-center text-primary">RSVP</h2>
         <p className="text-center text-foreground">

@@ -3,15 +3,14 @@ import { HeroSection } from "@/components/HeroSection";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { RsvpForm } from "@/components/RsvpForm";
 import { ThankYouMessage } from "@/components/ThankYouMessage";
-import { supabase } from "./lib/supabase";
+import { supabase } from "../lib/supabase";
 
-export default function Home() {
+export function Home() {
   const weddingDate = "(soon)";
   const [submittedData, setSubmittedData] = useState<{
     name: string;
     attending: string;
   } | null>(null);
-
 
   async function handleSubmit(formData: {
     name: string
@@ -41,21 +40,18 @@ export default function Home() {
     })
   }
 
-
   return (
-    <main className="min-h-screen bg-pink-50 text-gray-900 p-6">
-      <div className="max-w-3xl mx-auto text-center">
-        <HeroSection weddingDate={weddingDate} />
-        <ImageCarousel />
-        {!submittedData ? (
-          <RsvpForm onSubmit={handleSubmit} />
-        ) : (
-          <ThankYouMessage
-            name={submittedData.name}
-            attending={submittedData.attending}
-          />
-        )}
-      </div>
-    </main>
+    <div className="max-w-3xl mx-auto text-center">
+      <HeroSection weddingDate={weddingDate} />
+      <ImageCarousel />
+      {!submittedData ? (
+        <RsvpForm onSubmit={handleSubmit} />
+      ) : (
+        <ThankYouMessage
+          name={submittedData.name}
+          attending={submittedData.attending}
+        />
+      )}
+    </div>
   );
 }
