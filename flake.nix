@@ -2,7 +2,7 @@
   description = "Wedding Site with Bun, React, Tailwind, and Vercel CLI";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -19,14 +19,12 @@
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           bun
-          nodejs_20
-          wrangler
+          nodejs
         ];
 
         shellHook = ''
           echo "Bun: $(bun --version)"
           echo "Node: $(node --version)"
-          echo "Wrangler: $(wrangler --version)"
         '';
       };
     });

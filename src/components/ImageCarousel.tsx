@@ -36,16 +36,15 @@ export function ImageCarousel() {
             <CarouselItem key={idx}>
               <div className="w-full aspect-[4/3] relative rounded-xl shadow-lg overflow-hidden">
                 {!loaded[idx] && (
-                  <Skeleton className="absolute inset-0 w-full h-full" />
+                  <Skeleton className="absolute insect-0 w-full h-full" />
                 )}
                 <img
                   src={src}
                   alt={`Wedding photo ${idx + 1}`}
                   onLoad={() => handleLoad(idx)}
                   onError={() => handleLoad(idx)}
-                  className={`w-full h-full object-cover transition-opacity duration-700 ${
-                    loaded[idx] ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`w-full h-full object-cover transition-opacity duration-700 ${loaded[idx] ? 'opacity-100' : 'opacity-0'
+                    }`}
                 />
               </div>
             </CarouselItem>
