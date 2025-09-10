@@ -1,18 +1,6 @@
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { Button } from "@/components/ui/button";
 
-// Create a downloadable .ics file content
-const icsFileContent = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:John & Aria Wedding
-DTSTART:20260724T200000Z
-DTEND:20260724T230000Z
-DESCRIPTION:Join us in Boulder, Colorado to celebrate John & Aria's wedding!
-LOCATION:Boulder, Colorado
-END:VEVENT
-END:VCALENDAR`;
-
 export function Home() {
   const weddingDate = "July 24, 2026";
 
