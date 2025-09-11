@@ -6,7 +6,7 @@ export function Home() {
 
   // Google Calendar URL
   const calendarUrl =
-    "https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=NnFkOWE5NmMxZmczdHZjazc2cXAxY2dzN2kgam9obmtvcmhlbDFAbQ&tmsrc=johnkorhel1%40gmail.com";
+    "https://calendar.app.google/YgqBb1xhVrgfPn4M6";
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-0 mx-auto mb-16">
@@ -56,7 +56,7 @@ export function Home() {
             size="lg"
             className="rounded-full px-8 py-6 text-base shadow-sm hover:shadow-md transition-shadow"
           >
-            <a href="/john-aria-wedding.ics" download>
+            <a href="/wedding.ics" download>
               Download .ICS
             </a>
           </Button>
